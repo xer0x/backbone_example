@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Backbone List</title>
+
+    <script src="./public/javascripts/vendor/underscore.js"></script>
+    <script src="./public/javascripts/vendor/jquery.js"></script>
+    <script src="./public/javascripts/vendor/backbone.js"></script>
+    <script src="./public/javascripts/monkies/backbone.js"></script>
+    <script src="./public/javascripts/lib/backbone.has.js"></script>
+    <script src="./public/javascripts/lib/backbone.list.js"></script>
+
+    <script src="./index.js"></script>
+  </head>
+  <body>
+    <h1>Backbone List</h1>
+    <p>
+      Please modify <code>./public/javascripts/lib/backbone.list.js</code> to
+      include the following functionality:
+    </p>
+    <ul>
+      <li>Clicking add creates a list item.</li>
+      <li>Clicking remove deletes a list item.</li>
+      <li>Clicking reset restores the list to it's original state.</li>
+      <li>The list only communicates with the UI through it's collection and models.</li>
+      <li>Items remain sorted by text through any operation.</li>
+    </ul>
+    <p>
+      There is also a <a href="./spec/javascripts/lib/list_spec.html">test suite</a> of other useful functionality that might be fun to implement.
+    </p>
+
+    <form class="add">
+      <input class="add">
+      <input type="submit" value="Add Item">
+    </form>
+    <br>
+    <button class="reset">Reset</button>
+    <br>
+  </body>
+</html>
