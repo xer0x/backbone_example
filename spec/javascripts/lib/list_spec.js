@@ -26,30 +26,19 @@ test('create views from collection', function() {
 
 test('add model', function() {
 	var list = new List({collection: c}).render();
-
 	c.add(m);
 	equal(list.views.length, 3);
-
 	var view = list.findView(m.cid);
 	ok(view.model === m);
-
 	ok(list.findView(m.cid) === view);
-
 	ok(list.findView(view.cid) === view);
-
-	console.log('set to 50')
 	m.set({id: 50});
-	console.log(list.findView(50) );
-	console.log(view)
 	ok(list.findView(50) === view);
-	console.log('done wtf')
-
 	c.add(m);
 	equal(list.views.length, 3);
 });
 
 test('insert elements in order', function() {
-	console.log('sort sort sort')
 	var list = new List({collection: c}).render();
 	c.comparator = function(model) { return model.id; };
 	c.add(m3);
@@ -58,8 +47,6 @@ test('insert elements in order', function() {
 	ok($(list.findView(-5).el).is(':nth-child(1)'));
 	c.add({id: -1});
 	ok($(list.findView(-1).el).is(':nth-child(2)'));
-	console.log('length: %o', c.length);
-	console.log('sort sort sort')
 });
 
 test('remove model', function() {

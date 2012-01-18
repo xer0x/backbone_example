@@ -2,29 +2,37 @@
 (function ($) {
 
 	var List = Backbone.List = Backbone.View.extend({
-		tagName: 'ul',
-		itemType: Backbone.Model,
-		render: function (event) {
-			console.log('render');
-			var elem = $(this.el);
-			/*
-			elem.empty();
-			_.each(this.views, function (item) {
-				elem.append(item.el);
-			});
-			*/
-			this.collection.each(function (model) {
-				elem.append(model.view.el);
-			});
-			return this;
+		defaults: {
+			tagName: 'ul',
+			id: 'itemList',
+			itemOptions: {
+				ul: {tagName: 'li'},
+				ol: {tagName: 'li'},
+				div: {tagName: 'div'}
+			}
 		},
 		initialize: function () {
-			_(this).bindAll('add', 'remove');
-			this.views = [];
+			this.$el = $(this.el);
+			
+			this.itemType = this.options.itemType || Backbone.View;
+			this.id = this.options.id || this.defaults.id;
+			this.tagName = this.options.tagName || this.defaults.tagName;			
+			this.itemOptions = this.options.itemOptions || this.defaults.itemOptions[this.tagName];
+			
+			_(this).bindAll('add', 'remove', 'updateViewArray');
 			this.collection.bind("add", this.add);
-			//this.collection.bind("remove", this.updateViewArray, this);
-			this.collection.bind("change", this.updateViewArray, this);
+			this.collection.bind("remove", this.remove);
+			this.collection.bind("reset", this.updateViewArray);
+
+			this.collection.bind("all", function (eventName, arg) {
+				this.trigger(eventName, arg);
+			}, this);
+
+			this.views = [];
 			this.updateViewArray();
+		},
+		render: function (event) {		
+			return this;
 		},
 		findView: function (needle) {
 			// TODO make this properly
@@ -40,21 +48,45 @@
 			}
 			return false;
 		},
+		remove: function (model, n, o, p) {
+			
+			$(model.view.el).remove();
+			var rmModel = this.findView(model)
+			this.views = _.reject(this.views, function (viewModel) {
+				return viewModel === rmModel;
+			});
+		},
 		add: function (newModel) {
 			if (!this.findView(newModel)) {
-				newModel.view = new Backbone.View({tagName: 'li', model: newModel});
-				this.views.push(newModel.view);
+				newModel.view = new this.itemType(_.extend({model: newModel}, this.itemOptions));
+				this.views.push(newModel.view.render());
+
+				newModel.view.bind("all", function(eventName, arg) {
+					this.collection.trigger(eventName, arg);
+				}, this);
+
+				//From: https://github.com/documentcloud/backbone/issues/41
+				var index = this.collection.indexOf(newModel);
+				var previous = this.collection.at(index - 1);
+				var previousView = previous && previous.view;
+				if (index == 0 || !previous || !previousView) {
+					$(this.el).prepend(newModel.view.el);
+				} else {
+					$(previousView.el).after(newModel.view.el);
+				}
 			}
+
 		},
 		updateViewArray: function () {
+			$(this.el).empty();
+			this.views = _.filter(this.views, function (view) {
+				return !!this.findView(view);
+			}, this);
 			this.collection.each(this.add);
-			this.render();
 		},
-		//comparator: function (model) {
-			//return model.get('id');
-		//},
-		events: {}
-
+		select: function () {
+			return;
+		}
 	});
 
 })(jQuery);
