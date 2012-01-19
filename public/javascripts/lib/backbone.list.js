@@ -19,10 +19,10 @@
 			this.tagName = this.options.tagName || this.defaults.tagName;			
 			this.itemOptions = this.options.itemOptions || this.defaults.itemOptions[this.tagName];
 
-			if (this.itemOptions.tagName = 'a') {
+			if (this.itemOptions.tagName === 'a') {
 				this.itemOptions.tagName = 'li';
 			}
-			
+		
 			_(this).bindAll('add', 'remove', 'updateViewArray');
 			this.collection.bind("add", this.add);
 			this.collection.bind("remove", this.remove);
