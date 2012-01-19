@@ -49,7 +49,6 @@
 			return false;
 		},
 		remove: function (model, n, o, p) {
-			
 			$(model.view.el).remove();
 			
 			if (model.get('selected')) {	
@@ -63,6 +62,7 @@
 			});
 		},
 		add: function (newModel) {
+
 			if (!this.findView(newModel)) {
 				newModel.view = new this.itemType(_.extend({model: newModel}, this.itemOptions));
 				this.views.push(newModel.view.render());
@@ -84,9 +84,15 @@
 		},
 		updateViewArray: function () {
 			$(this.el).empty();
+			
 			this.views = _.filter(this.views, function (view) {
-				return !!this.findView(view);
+				return _.include(this.collection.models, view.model);
 			}, this);
+
+			this.views = _.sortBy(this.views, function (view) {
+				return this.collection.indexOf(view.model);
+			}, this);	
+
 			this.collection.each(this.add);
 		},
 		select: function (model) {
