@@ -51,6 +51,12 @@
 		remove: function (model, n, o, p) {
 			
 			$(model.view.el).remove();
+			
+			if (model.get('selected')) {	
+				model.set({selected: false});
+				this.selected = undefined;
+			}
+			
 			var rmModel = this.findView(model)
 			this.views = _.reject(this.views, function (viewModel) {
 				return viewModel === rmModel;
@@ -75,7 +81,6 @@
 					$(previousView.el).after(newModel.view.el);
 				}
 			}
-
 		},
 		updateViewArray: function () {
 			$(this.el).empty();
@@ -84,8 +89,10 @@
 			}, this);
 			this.collection.each(this.add);
 		},
-		select: function () {
-			return;
+		select: function (model) {
+			model.set({selected: true});
+			this.selected = this.findView(model);
+			return this;
 		}
 	});
 
