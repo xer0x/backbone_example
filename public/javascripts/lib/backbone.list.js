@@ -16,7 +16,7 @@
 			
 			this.itemType = this.options.itemType || Backbone.View;
 			this.id = this.options.id || this.defaults.id;
-			this.tagName = this.options.tagName || this.defaults.tagName;			
+			this.tagName = this.options.tagName || this.defaults.tagName;
 			this.itemOptions = this.options.itemOptions || this.defaults.itemOptions[this.tagName];
 
 			if (this.itemOptions.tagName === 'a') {
@@ -35,32 +35,28 @@
 			this.views = [];
 			this.updateViewArray();
 		},
-		render: function (event) {		
+		render: function (event) {
 			return this;
 		},
 		findView: function (needle) {
-			// TODO make this properly
+			// TODO there must be a better way
+			var n = needle;
 			if (typeof needle === 'object') {
-				return _.find(this.views, function (view) {
-					return view.model.cid === needle.cid;
-				});
+				n = needle.cid;
 			}
-			if (typeof needle === 'string' || typeof needle === 'number') {
-				return _.find(this.views, function (view) {
-					return _.include([view.model.get('id'), view.model.cid, view.cid], needle);
-				}, this);
-			}
-			return false;
+			return _.find(this.views, function (view) {
+				return _.include([view.cid, view.model.id, view.model.cid], n);
+			}, this);
 		},
 		remove: function (model, n, o, p) {
 			$(model.view.el).remove();
 			
-			if (model.get('selected')) {	
+			if (model.get('selected')) {
 				model.set({selected: false});
 				this.selected = undefined;
 			}
 			
-			var rmModel = this.findView(model)
+			var rmModel = this.findView(model);
 			this.views = _.reject(this.views, function (viewModel) {
 				return viewModel === rmModel;
 			});
@@ -71,7 +67,7 @@
 				newModel.view = new this.itemType(_.extend({model: newModel}, this.itemOptions));
 				this.views.push(newModel.view.render());
 
-				newModel.view.bind("all", function(eventName, arg) {
+				newModel.view.bind("all", function (eventName, arg) {
 					this.collection.trigger(eventName, arg);
 				}, this);
 
@@ -79,7 +75,7 @@
 				var index = this.collection.indexOf(newModel);
 				var previous = this.collection.at(index - 1);
 				var previousView = previous && previous.view;
-				if (index == 0 || !previous || !previousView) {
+				if (index === 0 || !previous || !previousView) {
 					$(this.el).prepend(newModel.view.el);
 				} else {
 					$(previousView.el).after(newModel.view.el);
@@ -95,7 +91,7 @@
 
 			this.views = _.sortBy(this.views, function (view) {
 				return this.collection.indexOf(view.model);
-			}, this);	
+			}, this);
 
 			this.collection.each(this.add);
 		},
