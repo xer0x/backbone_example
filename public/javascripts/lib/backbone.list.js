@@ -39,13 +39,12 @@
 			return this;
 		},
 		findView: function (needle) {
-			// TODO there must be a better way
 			var n = needle;
 			if (typeof needle === 'object') {
 				n = needle.cid;
 			}
 			return _.find(this.views, function (view) {
-				return _.include([view.cid, view.model.id, view.model.cid], n);
+				return _.include([view.cid, view.model.id, view.model.cid], n); // True if n in (view, model)
 			}, this);
 		},
 		remove: function (model, n, o, p) {
@@ -55,7 +54,8 @@
 				model.set({selected: false});
 				this.selected = undefined;
 			}
-			
+		
+			// Remove view from views
 			var rmModel = this.findView(model);
 			this.views = _.reject(this.views, function (viewModel) {
 				return viewModel === rmModel;
